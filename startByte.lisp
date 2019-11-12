@@ -34,9 +34,40 @@
     )
 )
 
-(trace matrixFactoryByte)
-(matrixFactoryByte 1 2)
-(untrace matrixFactoryByte)
+(defun list-key-assoc(key lista )
+    (if (null lista) '()
+        (if (equalp (caar lista) key) (cadar lista)
+            (list-key-assoc key (cdr lista))
+        )
+    )
+)
+
+(defun emptyField()
+    (format t "       ")
+)
+
+(defun getDots(numberOfDots)
+    (cond ((= 3 numberOfDots) (format t " . . . "))
+        ((= 2 numberOfDots) (format t ". ."))
+        ((= 1 numberOfDots) (format t "."))
+    )
+)
+
+(setq numberToLetter '((0 A) (1 B) (2 C) (3 D) (4 E) (5 F) (6 G) (7 H)))
+
+
+(dotimes (i 8)
+    (dotimes (j 3)
+            (if (= j 1) 
+                (format t "~a " (cadr (assoc i numberToLetter)))
+                (format t "  ")
+            )
+        (dotimes (k 8)
+            (if (= (mod (+ i k) 2) 0) (getDots 3) (emptyField))
+            (if (= k 7) (format t "~%"))
+        )
+    )
+)
 
 ;; (dotimes (n 10)
 ;;   (print n))
