@@ -1,0 +1,42 @@
+(defun startGame ()
+    (welcome)
+    (readBoardDimension)
+    (createTopRow)
+    
+)
+
+(defun welcome ()
+    (format t "~%. . . . . . . . . . . . . . . . . . . . . . .")
+    (format t "~%. . . . . .     Welcome to BYTE   . . . . . .")
+    (format t "~%. . . . . . . . . . . . . . . . . . . . . . .~%")
+)
+
+(defun readBoardDimension () 
+    (format t "~%. . . . . . . . . . . . . . . . . . . . . . .")
+    (format t "~%Enter board dimension: ")
+    (setq n (read))
+    (format t ". . . . . . . . . . . . . . . . . . . . . . .")
+)
+
+(defun createTopRow ()
+    (format t "~%")
+    (dotimes (topNumber n)
+        (format t "    ~a"(1+ topNumber))
+    )
+)
+
+(defun matrixFactoryByte (row column)
+    (cond ((= 7 row) '())
+        ((and (= 0 (mod row 2)) (< column 9) ) (cons (cons (list row column) (list '(O)) ) (matrixFactoryByte row (+ 2 column)) ) )
+        ((= 9 column) (matrixFactoryByte (1+ row) '2 ) )
+        ( (and (= 1 (mod row 2)) (< column 10) ) (cons (cons (list row column) (list '(X))) (matrixFactoryByte row (+ 2 column))  ) )
+        ((= 10 column) (matrixFactoryByte (1+ row) '1))
+    )
+)
+
+(trace matrixFactoryByte)
+(matrixFactoryByte 1 2)
+(untrace matrixFactoryByte)
+
+;; (dotimes (n 10)
+;;   (print n))
