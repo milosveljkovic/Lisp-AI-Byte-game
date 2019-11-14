@@ -1,7 +1,13 @@
+(load "./Task1/Helper.lisp")
+
 (defun startGame ()
     (welcome)
     (readBoardDimension)
-    (matrixFactoryByte 1 1) ;ovo nam i ne treba bilo je za test ali neka ga
+    (setq matr (matrixFactoryByte 1 1))
+    ;;(matrixFactoryByte 1 1) ;ovo nam i ne treba bilo je za test ali neka ga
+    ;;(trace playMove)
+    (getValuesFromMove '((C 3) (D 4) 1) matr)
+    (playMove '((C 3) (D 4) 1) matr)
     (displayBoard)
 )
 
@@ -56,8 +62,6 @@
     )
 )
 
-(setq numberToLetter '((0 A) (1 B) (2 C) (3 D) (4 E) (5 F) (6 G) (7 H) (8 I) (9 J)))
-
 
 (defun displayBoard ()
     (format t "~%")
@@ -111,7 +115,7 @@
             )
         (dotimes (k dimension)
             (if (= (mod (+ i k) 2) 0) 
-                (displayBits i j k matrix)
+                (displayBits i j k matr)
                 (emptyField))
             (if (= k (- dimension 1)) (format t "~%"))
         )
@@ -119,10 +123,54 @@
 )
 )
 
+(defun getValuesFromMove (move matrix)
+        (setq from (cadr (assoc (caar move) letterToNumber)))
+        (setq to (cadr (assoc (caadr move) letterToNumber)))
+        (setq elTo (car (reverse (getBitsByKey (list from (1- (cadar move))) matrix))));; Uzima poslednji element iz polja iz kog da saljemo
+)
+
+(defun playMove (move matrix)
+    (setq matr ;;Cuvamo matricu kao globalnu promenljivu da bi mogli da je stampamo
+        (progn 
+            (cond
+                ((null matrix) '())
+                ((and 
+                    (not (equalp (caar matrix) (list from (1- (cadar move))) )) ;; Ako nije jedno od polja koja su prosledjena u "move"..
+                    (not (equalp (caar matrix) (list to (1- (cadadr move))) ))
+                )
+                (cons (car matrix) (playMove move (cdr matrix))) ;;Onda idemo dalje, cuvamo prethodne elemente..
+                )
+                (t 
+                    (if (equalp (caar matrix) (list to (1- (cadadr move)))) ;;E sad, ako je ono polje u koje pomeramo element(plocicu)
+                        (cons
+                            (list
+                                (caar matrix)
+                                (append 
+                                    (cons elTo '()) ;;spajamo elemenat koji smo uzeli iz polja sa kog saljemo
+                                    (cadar matrix) ;;i ostatak liste
+                                )
+                            )
+                            (playMove move (cdr matrix))
+                        ) ;; A ako je polje iz kog saljemo taj elemenat, samo ga brisemo
+                        (cons
+                            (list
+                                (caar matrix)
+                                '()
+                            )
+                            (playMove move (cdr matrix))
+                        )
+                    )
+                )
+            )
+        )
+    )
+)
+
 ;test matrica
-(setq matrix '( ((0 0) (x X o o o) ) ((1 1) (o x o x x o)) ((1 3) (X o o x o x x)) ((1 7) (X)) ((2 0) (O)) ((2 2) (O o o x o x x)) ((2 4) (O)) ((2 6) (O)) ((3 1) (X o o)) ((3 3) (X)) ((3 5) (X)) ((3 7) (X)) ((4 0) (O))     
- ((4 2) (O)) ((4 4) (O o o x x)) ((4 6) (O)) ((5 1) (X o o x x x o)) ((5 3) (X x o x o x o)) ((5 5) (o x x x o)) ((5 7) (X x o x)) ((6 0) (O)) ((6 2) (O)) ((6 4) (O)) ((6 6) (O))))
+;;(setq matrix '( ((0 0) (x X o o o) ) ((1 1) (o x o x x o)) ((1 3) (X o o x o x x)) ((1 7) (X)) ((2 0) (O)) ((2 2) (O o o x o x x)) ((2 4) (O)) ((2 6) (O)) ((3 1) (X o o)) ((3 3) (X)) ((3 5) (X)) ((3 7) (X)) ((4 0) (O))     
+;; ((4 2) (O)) ((4 4) (O o o x x)) ((4 6) (O)) ((5 1) (X o o x x x o)) ((5 3) (X x o x o x o)) ((5 5) (o x x x o)) ((5 7) (X x o x)) ((6 0) (O)) ((6 2) (O)) ((6 4) (O)) ((6 6) (O))))
 
 (startGame)
-;; (dotimes (n 10)
-;;   (print n))
+
+;;(cdr (member (list (list to ((1- (cadadr move)))) (getBitsByKey((list to ((1- (cadadr move)))) matrix))) matrix)) spaja dodati deo sa ostatkom liste
+;;(cdar (member (list (list to (1- (cadadr move))) (getBitsByKey (list to (1- (cadadr move))) matrix)) matrix))
