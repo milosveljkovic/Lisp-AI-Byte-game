@@ -4,16 +4,15 @@
     (welcome)
     (readBoardDimension)
     (setq matr (matrixFactoryByte 1 1))
-    
-    ;;dinamicki dodani potezi radi provere funkcije
-    (getValuesFromMove '((C 3) (D 4) 0) matr)
-    (playMove '((C 3) (D 4) 0) matr)
-    (getValuesFromMove '((D 4) (C 5) ) matr)
-    (playMove '((D 4) (C 5) ) matr)
-    (getValuesFromMove '((C 5) (B 4) 2) matr)
-    (playMove '((C 5) (B 4) 2) matr)
-
+    (setq playerOne 0)
+    (setq playerTwo 0)
+    (setq isX t)
+    (setq isPerson 1) ;treba dodati da se izabere ko igra prvi
     (displayBoard)
+    (getMove)
+
+    (loop while (not (endOfGame)) 
+    do (getMove))
 )
 
 (defun welcome ()
@@ -188,6 +187,49 @@
     )
 )
 
+(defun getMove ()
+    (if isPerson
+        (progn
+            (format t "Enter your move as a list:~%")
+            (let*
+                ((input (read)))
+                (if (checkInput input)
+                    ;(validate input isX)
+                    (progn
+                        (getValuesFromMove input matr)
+                        (playMove input matr)
+                        (displayBoard)
+                    )
+                )
+            )
+        )
+    )
+)
+
+(defun checkInput (input)
+    t
+)
+
+(defun validate (move isX)
+    (validate)
+)
+
+(defun endOfGame ()
+    (cond 
+        (
+            (= dimension 8)
+            (if (or (= playerOne 2) (= playerTwo 2))
+                t NIL
+            )
+        )
+        (   
+            t
+            (if (or (= playerOne 3) (= playerTwo 3))
+            t NIL
+            )
+        )
+    )
+)
 ;test matrica
 ;;(setq matrix '( ((0 0) (x X o o o) ) ((1 1) (o x o x x o)) ((1 3) (X o o x o x x)) ((1 7) (X)) ((2 0) (O)) ((2 2) (O o o x o x x)) ((2 4) (O)) ((2 6) (O)) ((3 1) (X o o)) ((3 3) (X)) ((3 5) (X)) ((3 7) (X)) ((4 0) (O))     
 ;; ((4 2) (O)) ((4 4) (O o o x x)) ((4 6) (O)) ((5 1) (X o o x x x o)) ((5 3) (X x o x o x o)) ((5 5) (o x x x o)) ((5 7) (X x o x)) ((6 0) (O)) ((6 2) (O)) ((6 4) (O)) ((6 6) (O))))
