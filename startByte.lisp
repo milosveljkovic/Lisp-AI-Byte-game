@@ -7,8 +7,8 @@
     (welcome)
     (readBoardDimension)
     (setq matr (matrixFactoryByte 1 1))
-    (setq playerOne 0)
-    (setq playerTwo 0)
+    (setq playerX 0)
+    (setq playerO 0)
     (setq isX t)
     (setq isPerson 1) ;treba dodati da se izabere ko igra prvi
     (displayBoard)
@@ -87,12 +87,25 @@
 )
 
 (defun getMove ()
+    (enterMovePrint)
     (if isPerson
         (progn
-            (format t "Enter your move as a list:~%")
             (let*
                 ((input (read)))
-                (if (checkInput input)
+                (if (validate input)
+                    ;(validate input isX)
+                    (progn
+                        (getValuesFromMove input matr)
+                        (playMove input matr)
+                        (displayBoard)
+                    )
+                )
+            )
+        ) ;else, bot part
+        (progn
+            (let*
+                ((input (read)))
+                (if (validate input)
                     ;(validate input isX)
                     (progn
                         (getValuesFromMove input matr)
@@ -110,13 +123,13 @@
     (cond 
         (
             (= dimension 8)
-            (if (or (= playerOne 2) (= playerTwo 2))
+            (if (or (= playerX 2) (= playerO 2))
                 t NIL
             )
         )
         (   
             t
-            (if (or (= playerOne 3) (= playerTwo 3))
+            (if (or (= playerX 3) (= playerO 3))
             t NIL
             )
         )

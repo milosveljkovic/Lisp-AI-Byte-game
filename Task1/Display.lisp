@@ -71,6 +71,16 @@
     )
 )
 
+(defun enterMovePrint ()
+    (format t "Enter your move as a list~%")
+    (if isX 
+        (format t "Player X has turn:")
+        (format t "Player O has turn:")
+    )
+    (setq isX (not isX))
+)
+
+
 (defun getDots(numberOfDots)
     (cond 
         ((= 3 numberOfDots) (format t " . . . "))
