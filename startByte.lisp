@@ -6,7 +6,7 @@
 (defun startGame ()
     (welcome)
     (readBoardDimension)
-    (setq matr (matrixFactoryByte 1 1))
+    (setq globalMatrix (matrixFactoryByte 1 1))
     (setq playerX 0)
     (setq playerO 0)
     (setq isX t)
@@ -43,7 +43,7 @@
 )
 
 (defun playMove (move matrix)
-    (setq matr ;;Cuvamo matricu kao globalnu promenljivu da bi mogli da je stampamo
+    (setq globalMatrix ;;Cuvamo matricu kao globalnu promenljivu da bi mogli da je stampamo
         (progn 
             (cond
                 ((null matrix) '())
@@ -80,8 +80,8 @@
 )
 
 (defun getValuesFromMove (move matrix)
-        (setq from (cadr (assoc (caar move) letterToNumber)))
-        (setq to (cadr (assoc (caadr move) letterToNumber)))
+        (setq from (getFrom move))
+        (setq to (getTo move))
         (setq elTo (reverse (getNElementsOfList (reverse (getBitsByKey (list from (1- (cadar move))) matrix)) (caddr move))))
         ;; Uzima elemente koje prosledjujemo u potezu
 )
@@ -95,10 +95,11 @@
                 (if (validate input)
                     ;(validate input isX)
                     (progn
-                        (getValuesFromMove input matr)
-                        (playMove input matr)
+                        (getValuesFromMove input globalMatrix)
+                        (playMove input globalMatrix)
                         (displayBoard)
                     )
+                    (format t "Invalide move, please try again!~%")
                 )
             )
         ) ;else, bot part
@@ -108,10 +109,11 @@
                 (if (validate input)
                     ;(validate input isX)
                     (progn
-                        (getValuesFromMove input matr)
-                        (playMove input matr)
+                        (getValuesFromMove input globalMatrix)
+                        (playMove input globalMatrix)
                         (displayBoard)
                     )
+                    (format t "Invalide move, please try again!~%")
                 )
             )
         )
