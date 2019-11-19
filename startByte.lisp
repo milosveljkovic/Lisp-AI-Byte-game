@@ -10,7 +10,7 @@
     (setq playerX 0)
     (setq playerO 0)
     (setq isX t)
-    (setq isPerson 1) ;treba dodati da se izabere ko igra prvi
+    (setq isPerson (choseFirstPlayer))
     (displayBoard)
     (play)
 )
@@ -18,6 +18,7 @@
 (defun play()
     (loop while (not (endOfGame)) 
     do (getMove))
+    (gameOverMessage)
 )
 
 (defun welcome ()
@@ -103,6 +104,7 @@
             )
         ) ;else, bot part
         (progn
+            ;; (format t "~%Computer move")
             (let*
                 ((input (read)))
                 (if (validate input)
@@ -131,6 +133,51 @@
             t
             (if (or (= playerX 3) (= playerO 3))
             t NIL
+            )
+        )
+    )
+)
+
+(defun gameOverMessage ()
+    (cond 
+        (
+            (= dimension 8)
+            (if (= playerX 2)
+                (format t "Player X wins!!!~%To play new game press Y~%") 
+                (format t "Player O wins!!!~%To play new game press Y~%") 
+            )
+        )
+        (   
+            t
+            (if (= playerX 3) 
+                (format t "Player X wins!!!~%To play new game press Y~%") 
+                (format t "Player O wins!!!~%To play new game press Y~%")
+            )
+        )
+    )
+    (getNewGameAnswer)
+)
+
+(defun getNewGameAnswer ()
+    (let
+        ((newGameAnswer (read)))
+        (if (equalp newGameAnswer 'Y) (startGame) (format t "Game over~%"))
+    )
+)
+
+(defun choseFirstPlayer ()
+    (format t "~%Who is playing first? Enter 'c' for computer, or 'p' for person:~%")
+	(let ((entry (read)))
+        (if (not (or (equalp entry 'C) (equalp entry 'P) )) 
+            (progn 
+                (format t "Invalid input enter 'c' or 'p'.~%") '()
+                (choseFirstPlayer)
+            )
+            (progn      
+                (cond
+                    ((equalp entry 'C) '())
+                    ((equalp entry 'P) t)
+                )   
             )
         )
     )
