@@ -1,45 +1,67 @@
 
-;da li je crno polje u pitanju
+;da li je crno polje u pitanju, checked
 ;da li je element sa zadate visine isti kao i igrac koji je na potezu
 ;
-(defun validate (move)
+(defun validate (input)
     (if
         (and 
-            ;;(checkInput move)
+            (checkInputFormat-p input)
+            (blackField-p input)
+            (elemtnHighMatchingPlayer input)
         )
         t
         Nil
     )
 )
 
-#||
-(defun checkInput (input)
-    (let ((letters '(a b c d e f g h i j))
-        (numbers '(0 1 2 3 4 5 6 7 8 9 10))
-         (nthNumber '(0 1 2 3 4 5 6 7)))
-    (cond
-            ((and (listp (member (caar input) letters)) (listp (member (caadr input) letters))
-                (listp (member (cadar input) numbers)) (listp (member (cadadr input) numbers))
-                (listp (member (caddr input) nthNumber))
-             ) t)
-             (t Nil)
-        
-    )
-    
-))
-||#
-#||
-(defun addPointToPlayer (matrix)
-    (cond
-        ((null matrix) 0)
-        ((equal (length (cdar matrix)) 8) 
-            (progn 
-                (if (equal (cadar matrix) X) (setq playerOne (1+ playerOne)) (setq playerTwo (1+ playerTwo)))
-                (cons (list (caar matrix) '()) (addPointToPlayer (cdr matirx)))
-            )
+(defun checkInputFormat-p (input)
+    t
+)
+
+(defun blackField-p (input)
+    (if 
+        (and 
+        (fromToIsBlackField-p (getFrom input) input 0)
+        (fromToIsBlackField-p (getTo input) input 1)
         )
-        (t (cons (car matrix) (addPointToPlayer (cdr matrix))))
+        t
+        Nil
     )
 )
 
-||#
+(defun fromToIsBlackField-p (fromField input fromToIndex)
+    (if 
+        (= (mod fromField 2) 0)
+        (if (= (mod (1- (getColumnValue input fromToIndex)) 2) 0)
+            t
+            Nil
+        )
+        (if (= (mod (1- (getColumnValue input fromToIndex)) 2) 1)
+            t
+            Nil
+        )
+    )
+)
+
+(defun getColumnValue (input fromToIndex)
+    (if (= fromToIndex 0)
+        (cadar input)
+        (cadadr input)
+    )
+)
+
+(defun elemtnHighMatchingPlayer (input) 
+    (format t "~a" (car (getNElementsOfList (reverse (getBitsByKey (list (getFrom input) (1- (cadar input)))  globalMatrix)) (caddr input))))
+    (if isX
+        (if
+            (equalp 'O (car (getNElementsOfList (reverse (getBitsByKey (list (getFrom input) (1- (cadar input)))  globalMatrix)) (caddr input))))
+            t
+            Nil
+        )
+        (if
+            (equalp 'X (car (getNElementsOfList (reverse (getBitsByKey (list (getFrom input) (1- (cadar input)))  globalMatrix)) (caddr input))))
+            t
+            Nil
+        )
+    )
+)

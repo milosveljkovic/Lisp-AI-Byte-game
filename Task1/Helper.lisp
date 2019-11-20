@@ -18,3 +18,11 @@
         (t (cons (car l) (getRestOfList (cdr nEl) (cdr l))))
     )
 )
+
+(defun getFrom (move)
+    (cadr (assoc (caar move) letterToNumber))
+)
+
+(defun getTo (move)
+    (cadr (assoc (caadr move) letterToNumber))
+)
