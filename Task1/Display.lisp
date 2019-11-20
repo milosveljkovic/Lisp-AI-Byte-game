@@ -1,7 +1,7 @@
 (defun displayBoard ()
     (format t "~%")
     (createTopRow)
-    (createFields)
+    (createFields)(print globalMatrix)
     (format t "~%")
 )
 
@@ -22,7 +22,7 @@
             )
             (dotimes (k dimension)
                 (if (= (mod (+ i k) 2) 0) 
-                    (displayBits i j k matr)
+                    (displayBits i j k globalMatrix)
                     (emptyField))
                 (if (= k (- dimension 1)) (format t "~%"))
             )

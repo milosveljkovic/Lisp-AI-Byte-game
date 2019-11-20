@@ -6,7 +6,7 @@
 (defun startGame ()
     (welcome)
     (readBoardDimension)
-    (setq matr (matrixFactoryByte 1 1))
+    (setq globalMatrix (matrixFactoryByte 1 1))
     (setq playerX 0)
     (setq playerO 0)
     (setq isX t)
@@ -43,8 +43,8 @@
 )
 
 (defun playMove (move matrix)
-    (setq matr ;;Cuvamo matricu kao globalnu promenljivu da bi mogli da je stampamo
-        (progn 
+    (setq globalMatrix ;;Cuvamo matricu kao globalnu promenljivu da bi mogli da je stampamo
+        (progn   
             (cond
                 ((null matrix) '())
                 ((and 
@@ -65,17 +65,26 @@
                             )
                             (playMove move (cdr matrix))
                         ) ;; A ako je polje iz kog saljemo taj elemenat, samo ga brisemo
-                        (cons
+                        (if (null (getRestOfList elTo (cadar matrix)))
+                            (playMove move (Cdr matrix))
+                            (cons
                             (list
                                 (caar matrix)
                                 (getRestOfList elTo (cadar matrix))
                             )
-                            (playMove move (cdr matrix))
+                            (playMove move (cdr matrix)))
                         )
                     )
                 )
             )
         )
+    )
+)
+
+(defun addFieldInMatrix (move matrix)
+    (if (null (getBitsByKey (list (cadr (assoc (caadr move) letterToNumber)) (1- (cadadr move))) matrix)) 
+            (cons (list (list (cadr (assoc (caadr move) letterToNumber)) (1- (cadadr move))) '())  matrix)
+            globalMatrix
     )
 )
 
@@ -92,15 +101,15 @@
         (progn
             (let*
                 ((input (read)))
-                (if (validate input)
+                ;;(if (validate input)
                     ;(validate input isX)
                     (progn
-                        (getValuesFromMove input matr)
-                        (playMove input matr)
+                        (getValuesFromMove input globalMatrix)
+                        (playMove input (addFieldInMatrix input globalMatrix))
                         (displayBoard)
                     )
                 )
-            )
+          ;;  )
         ) ;else, bot part
         (progn
             (let*
@@ -108,8 +117,8 @@
                 (if (validate input)
                     ;(validate input isX)
                     (progn
-                        (getValuesFromMove input matr)
-                        (playMove input matr)
+                        (getValuesFromMove input globalMatrix)
+                        (playMove input globalMatrix)
                         (displayBoard)
                     )
                 )
