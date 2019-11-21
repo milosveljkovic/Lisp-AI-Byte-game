@@ -1,7 +1,8 @@
 (defun displayBoard ()
     (format t "~%")
     (createTopRow)
-    (createFields)(print globalMatrix)
+    (createFields)
+    (print globalMatrix)
     (format t "~%")
 )
 

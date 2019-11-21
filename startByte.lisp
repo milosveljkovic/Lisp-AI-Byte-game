@@ -56,18 +56,24 @@
                 )
                 (t 
                     (if (equalp (caar matrix) (list to (1- (cadadr move)))) ;;E sad, ako je ono polje u koje pomeramo element(plocicu)
-                        (cons
-                            (list
-                                (caar matrix)
-                                (append 
-                                    elTo ;;spajamo elemenat koji smo uzeli iz polja sa kog saljemo
-                                    (cadar matrix) ;;i ostatak liste
+                        (if (equalp 8 (length (append elTo (cadar matrix))))
+                                (progn
+                                    (addPointToPlayer matrix)
+                                    (playMove move (cdr matrix))
                                 )
-                            )
-                            (playMove move (cdr matrix))
+                                (cons
+                                    (list
+                                        (caar matrix)
+                                        (append 
+                                            elTo 
+                                            (cadar matrix)
+                                        )
+                                    )
+                                    (playMove move (cdr matrix))
+                                )
                         ) ;; A ako je polje iz kog saljemo taj elemenat, samo ga brisemo
                         (if (null (getRestOfList elTo (cadar matrix)))
-                            (playMove move (Cdr matrix))
+                            (playMove move (cdr matrix))
                             (cons
                             (list
                                 (caar matrix)
@@ -80,6 +86,17 @@
             )
         )
     )
+)
+
+(defun addPointToPlayer (matrix)
+    (progn
+        (if 
+            (equalp (car (append elTo (cadar matrix))) 'X)
+                (setq playerX (1+ playerX)) 
+                (setq playerO (1+ playerO))
+        )
+        (format t "Player1 ~a : ~a Player2" playerX playerO)
+    )          
 )
 
 (defun addFieldInMatrix (move matrix)
@@ -109,7 +126,10 @@
                         (playMove input (addFieldInMatrix input globalMatrix))
                         (displayBoard)
                     )
-                    (format t "Invalide move, please try again!~%")
+                    (progn 
+                        (format t "Invalide move, please try again!~%")
+                        (setq isX (not isX))
+                    )
                 )
             )
         ) ;else, bot part
@@ -124,7 +144,10 @@
                         (playMove input globalMatrix)
                         (displayBoard)
                     )
-                    (format t "Invalide move, please try again!~%")
+                    (progn 
+                        (format t "Invalide move, please try again!~%")
+                        (setq isX (not isX))
+                    )
                 )
             )
         )
