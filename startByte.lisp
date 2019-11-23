@@ -45,7 +45,7 @@
 
 (defun playMove (move matrix)
     (setq globalMatrix ;;Cuvamo matricu kao globalnu promenljivu da bi mogli da je stampamo
-        (progn 
+        (progn   
             (cond
                 ((null matrix) '())
                 ((and 
@@ -56,27 +56,53 @@
                 )
                 (t 
                     (if (equalp (caar matrix) (list to (1- (cadadr move)))) ;;E sad, ako je ono polje u koje pomeramo element(plocicu)
-                        (cons
-                            (list
-                                (caar matrix)
-                                (append 
-                                    elTo ;;spajamo elemenat koji smo uzeli iz polja sa kog saljemo
-                                    (cadar matrix) ;;i ostatak liste
+                        (if (equalp 8 (length (append elTo (cadar matrix))))
+                                (progn
+                                    (addPointToPlayer matrix)
+                                    (playMove move (cdr matrix))
                                 )
-                            )
-                            (playMove move (cdr matrix))
+                                (cons
+                                    (list
+                                        (caar matrix)
+                                        (append 
+                                            elTo 
+                                            (cadar matrix)
+                                        )
+                                    )
+                                    (playMove move (cdr matrix))
+                                )
                         ) ;; A ako je polje iz kog saljemo taj elemenat, samo ga brisemo
-                        (cons
+                        (if (null (getRestOfList elTo (cadar matrix)))
+                            (playMove move (cdr matrix))
+                            (cons
                             (list
                                 (caar matrix)
                                 (getRestOfList elTo (cadar matrix))
                             )
-                            (playMove move (cdr matrix))
+                            (playMove move (cdr matrix)))
                         )
                     )
                 )
             )
         )
+    )
+)
+
+(defun addPointToPlayer (matrix)
+    (progn
+        (if 
+            (equalp (car (append elTo (cadar matrix))) 'X)
+                (setq playerX (1+ playerX)) 
+                (setq playerO (1+ playerO))
+        )
+        (format t "Player1 ~a : ~a Player2" playerX playerO)
+    )          
+)
+
+(defun addFieldInMatrix (move matrix)
+    (if (null (getBitsByKey (list (cadr (assoc (caadr move) letterToNumber)) (1- (cadadr move))) matrix)) 
+            (cons (list (list (cadr (assoc (caadr move) letterToNumber)) (1- (cadadr move))) '())  matrix)
+            globalMatrix
     )
 )
 
@@ -97,13 +123,17 @@
                     ;(validate input isX)
                     (progn
                         (getValuesFromMove input globalMatrix)
-                        (playMove input globalMatrix)
+                        (playMove input (addFieldInMatrix input globalMatrix))
                         (displayBoard)
                         (setq isX (not isX)) ;ovde bi trebalo da bude ovo za promenu igraca sa x na o i obrnuto zbog mogucnosti pogresnog poteza, sem ako nije nesto drugacije odradjeno
                     )
                     (progn 
                         (format t "Invalide move, please try again!~%") 
                         (getMove) ;dodat ponovni poziv funkcije getMove() ako nije validan potez odigran
+                    )
+                    (progn 
+                        (format t "Invalide move, please try again!~%")
+                        ;(setq isX (not isX))
                     )
                 )
             )
@@ -119,12 +149,15 @@
                         (playMove input globalMatrix)
                         (displayBoard)
                     )
-                    (format t "Invalide move, please try again!~%")
+                    (progn 
+                        (format t "Invalide move, please try again!~%")
+                        (setq isX (not isX))
+                    )
                 )
             )
         )
     )
-    (getMove)
+    ;(getMove)
 )
 
 (defun endOfGame ()
