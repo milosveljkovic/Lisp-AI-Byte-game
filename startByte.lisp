@@ -99,8 +99,12 @@
                         (getValuesFromMove input globalMatrix)
                         (playMove input globalMatrix)
                         (displayBoard)
+                        (setq isX (not isX)) ;ovde bi trebalo da bude ovo za promenu igraca sa x na o i obrnuto zbog mogucnosti pogresnog poteza, sem ako nije nesto drugacije odradjeno
                     )
-                    (format t "Invalide move, please try again!~%")
+                    (progn 
+                        (format t "Invalide move, please try again!~%") 
+                        (getMove) ;dodat ponovni poziv funkcije getMove() ako nije validan potez odigran
+                    )
                 )
             )
         ) ;else, bot part

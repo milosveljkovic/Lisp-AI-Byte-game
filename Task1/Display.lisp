@@ -77,7 +77,7 @@
         (format t "Player X has turn:")
         (format t "Player O has turn:")
     )
-    (setq isX (not isX))
+    ;(setq isX (not isX)) ;ovo bi trebalo da se prebaci posle validacije jer ako potez nije validan promenice igraca a da prethodni nije jos odigrao
 )
 
 

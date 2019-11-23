@@ -14,9 +14,9 @@
     )
 )
 
-(defun checkInputFormat-p (input)
-    t
-)
+;; (defun checkInputFormat-p (input)
+;;     t
+;; )
 
 (defun blackField-p (input)
     (if 
@@ -64,4 +64,43 @@
             Nil
         )
     )
+)
+
+(defun checkFirstFieldExistence-p (firstField)
+    (let ((firstFieldTransformed (list (cadr (assoc (car firstField) letterToNumber)) (1- (car (cdr firstField))))))
+        (if (getBitsByKey firstFieldTransformed matrix) t Nil)
+    )
+)
+
+(defun checkSecondField-p (secondField)
+    (cond 
+        ((= dimension 8)
+            (and 
+                (and (assoc (car secondField) letterToNumber)  (not (equalp (car secondField) 'I)) (not (equalp (car secondField) 'J)))
+                (and (>= (cadr secondField) 1) (<= (cadr secondField) 8))
+            )
+        )
+        ((= dimension 10)
+            (and
+                (assoc (car secondField) letterToNumber)
+                (and (>= (cadr secondField) 1) (<= (cadr secondField) 10))
+            )
+        )
+    )
+)
+
+(defun checkLastField-p (lastField)
+    (if (or (null lastField) (and (>= lastField 0) (<= lastField 7))) t Nil)
+)
+
+(defun checkInputFormat-p (input)
+    (and
+    (checkFirstFieldExistence-p (car input))
+    (checkSecondField-p (cadr input))
+    (checkLastField-p (caddr input))
+    )
+)
+
+(defun distanceToField (field1, field2)
+    (max (abs (- (car field1) (car field2))) (abs (- (cadr field1) (cadr field2))) )
 )
