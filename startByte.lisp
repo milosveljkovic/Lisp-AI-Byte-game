@@ -9,7 +9,7 @@
     (setq globalMatrix (matrixFactoryByte 1 1))
     (setq playerX 0)
     (setq playerO 0)
-    (setq isX t) ;treba prepraviti funkciju za ispitivanje ko je na potezu jer je logika obrnuta: kad je isX na nil tada igra X
+    (setq isX t) 
     (setq isPerson (choseFirstPlayer))
     (displayBoard)
     (play)
