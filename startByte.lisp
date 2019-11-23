@@ -9,7 +9,7 @@
     (setq globalMatrix (matrixFactoryByte 1 1))
     (setq playerX 0)
     (setq playerO 0)
-    (setq isX t)
+    (setq isX t) ;treba prepraviti funkciju za ispitivanje ko je na potezu jer je logika obrnuta: kad je isX na nil tada igra X
     (setq isPerson (choseFirstPlayer))
     (displayBoard)
     (play)
@@ -125,39 +125,37 @@
                         (getValuesFromMove input globalMatrix)
                         (playMove input (addFieldInMatrix input globalMatrix))
                         (displayBoard)
-                        (setq isX (not isX)) ;ovde bi trebalo da bude ovo za promenu igraca sa x na o i obrnuto zbog mogucnosti pogresnog poteza, sem ako nije nesto drugacije odradjeno
+                        (setq isX (not isX))
+                        (setq isPerson (not isPerson))
                     )
                     (progn 
                         (format t "Invalide move, please try again!~%") 
-                        (getMove) ;dodat ponovni poziv funkcije getMove() ako nije validan potez odigran
-                    )
-                    (progn 
-                        (format t "Invalide move, please try again!~%")
-                        ;(setq isX (not isX))
+                        (getMove) 
                     )
                 )
             )
         ) ;else, bot part
         (progn
-            ;; (format t "~%Computer move")
+            (format t "~%Computer move")
             (let*
                 ((input (read)))
                 (if (validate input)
-                    ;(validate input isX)
                     (progn
                         (getValuesFromMove input globalMatrix)
                         (playMove input globalMatrix)
                         (displayBoard)
+                        (setq isX (not isX))
+                        (setq isPerson (not isPerson))
                     )
                     (progn 
                         (format t "Invalide move, please try again!~%")
-                        (setq isX (not isX))
+                        (getMove)
+                        ;;(setq isX (not isX))
                     )
                 )
             )
         )
     )
-    ;(getMove)
 )
 
 (defun endOfGame ()

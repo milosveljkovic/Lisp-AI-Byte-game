@@ -50,13 +50,13 @@
     (if isX
         (if
             (equalp 'O (car (getNElementsOfList (reverse (getBitsByKey (list (getFrom input) (1- (cadar input)))  globalMatrix)) (caddr input))))
-            t
             Nil
+            t
         )
         (if
             (equalp 'X (car (getNElementsOfList (reverse (getBitsByKey (list (getFrom input) (1- (cadar input)))  globalMatrix)) (caddr input))))
-            t
             Nil
+            t
         )
     )
 )
@@ -96,9 +96,10 @@
     )
 )
 
-(defun distanceToField (field1, field2)
+(defun distanceToField (field1 field2)
     (max (abs (- (car field1) (car field2))) (abs (- (cadr field1) (cadr field2))) )
 )
+
 (defun checkInput (input)
     (let* (
             (letters '(a b c d e f g h))
