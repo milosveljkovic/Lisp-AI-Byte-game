@@ -101,6 +101,10 @@
 
 (defun checkInputFormat-p (input)
     (and
+    (if (list input) t Nil)
+    (if (list (car input)) t Nil)
+    (if (list (cadr input)) t Nil)
+    (if (or (numberp (cddr input)) (null (cddr input))) t Nil)
     (checkFirstFieldExistence-p (car input))
     (checkSecondField-p (cadr input))
     (checkLastField-p input)
