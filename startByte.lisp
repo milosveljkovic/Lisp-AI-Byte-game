@@ -29,9 +29,18 @@
 
 (defun readBoardDimension () 
     (format t "~%. . . . . . . . . . . . . . . . . . . . . . .")
-    (format t "~%Enter board dimension: ")
-    (setq dimension (read))
-    (format t ". . . . . . . . . . . . . . . . . . . . . . .")
+    (format t "~%Enter board dimension (8/10): ")
+    (let ((entry (read)))
+        (if (not (or (equalp entry '8) (equalp entry '10) )) 
+            (progn 
+                (format t "Invalid dimensions, enter '8' or '10'.~%") '()
+                (readBoardDimension)
+            )
+            (progn      
+                (setq dimension entry)
+            )
+        )
+    )
 )
 
 (defun matrixFactoryByte (row column)
@@ -44,18 +53,18 @@
 )
 
 (defun playMove (move matrix)
-    (setq globalMatrix ;;Cuvamo matricu kao globalnu promenljivu da bi mogli da je stampamo
+    (setq globalMatrix
         (progn   
             (cond
                 ((null matrix) '())
                 ((and 
-                    (not (equalp (caar matrix) (list from (1- (cadar move))) )) ;; Ako nije jedno od polja koja su prosledjena u "move"..
+                    (not (equalp (caar matrix) (list from (1- (cadar move))) ))
                     (not (equalp (caar matrix) (list to (1- (cadadr move))) ))
                 )
-                (cons (car matrix) (playMove move (cdr matrix))) ;;Onda idemo dalje, cuvamo prethodne elemente..
+                (cons (car matrix) (playMove move (cdr matrix)))
                 )
                 (t 
-                    (if (equalp (caar matrix) (list to (1- (cadadr move)))) ;;E sad, ako je ono polje u koje pomeramo element(plocicu)
+                    (if (equalp (caar matrix) (list to (1- (cadadr move))))
                         (if (equalp 8 (length (append elTo (cadar matrix))))
                                 (progn
                                     (addPointToPlayer matrix)
@@ -71,7 +80,7 @@
                                     )
                                     (playMove move (cdr matrix))
                                 )
-                        ) ;; A ako je polje iz kog saljemo taj elemenat, samo ga brisemo
+                        )
                         (if (null (getRestOfList elTo (cadar matrix)))
                             (playMove move (cdr matrix))
                             (cons
@@ -110,7 +119,6 @@
         (setq from (getFrom move))
         (setq to (getTo move))
         (setq elTo (reverse (getNElementsOfList (reverse (getBitsByKey (list from (1- (cadar move))) matrix)) (caddr move))))
-        ;; Uzima elemente koje prosledjujemo u potezu
 )
 
 (defun getMove ()
@@ -120,7 +128,6 @@
             (let*
                 ((input (read)))
                 (if (validate input)
-                    ;(validate input isX)
                     (progn
                         (getValuesFromMove input globalMatrix)
                         (playMove input (addFieldInMatrix input globalMatrix))
@@ -129,15 +136,14 @@
                         (setq isPerson (not isPerson))
                     )
                     (progn 
-                        (format t "Invalide move, please try again!~%") 
-                        ;(setq isX (not isX))
+                        (format t "Invalid move, please try again!~%") 
                         (getMove)
                     )
                 )
             )
-        ) ;else, bot part
+        )
         (progn
-            (format t "~%Computer move:~%")
+            (format t "~%Computer move:")
             (let*
                 ((input (read)))
                 (if (validate input)
@@ -149,9 +155,8 @@
                         (setq isPerson (not isPerson))
                     )
                     (progn 
-                        (format t "Invalide move, please try again!~%")
+                        (format t "Invalid move, please try again!~%")
                         (getMove)
-                        ;;(setq isX (not isX))
                     )
                 )
             )
@@ -208,7 +213,7 @@
 	(let ((entry (read)))
         (if (not (or (equalp entry 'C) (equalp entry 'P) )) 
             (progn 
-                (format t "Invalid input enter 'c' or 'p'.~%") '()
+                (format t "Invalid input, enter 'c' or 'p'.~%") '()
                 (choseFirstPlayer)
             )
             (progn      
