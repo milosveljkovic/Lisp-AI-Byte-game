@@ -171,7 +171,8 @@
         (lastField (if (null (caddr input)) 0 (caddr input)))
         )
         (if (and (= (length (getBitsByKey field2 globalMatrix)) 0) (or (null lastField) (= lastField 0))) t
-            (if (> (+ (- (length (getBitsByKey field1 globalMatrix)) lastField) (length (getBitsByKey field2 globalMatrix))) (length (getBitsByKey field1 globalMatrix))) t Nil)
+            (if (and (> (+ (- (length (getBitsByKey field1 globalMatrix)) lastField) (length (getBitsByKey field2 globalMatrix))) (length (getBitsByKey field1 globalMatrix)))
+            (<= (+ (- (length (getBitsByKey field1 globalMatrix)) lastField) (length (getBitsByKey field2 globalMatrix))) 8)) t Nil)
         )
     )
 )
