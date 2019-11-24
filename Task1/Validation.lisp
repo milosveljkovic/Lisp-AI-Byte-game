@@ -1,7 +1,4 @@
 
-;da li je crno polje u pitanju, checked
-;da li je element sa zadate visine isti kao i igrac koji je na potezu
-;
 (defun validate (input)
     (if
         (and 

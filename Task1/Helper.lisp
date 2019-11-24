@@ -2,7 +2,7 @@
 
 (setq letterToNumber '((A 0) (B 1) (C 2) (D 3) (E 4) (F 5) (G 6) (H 7) (I 8) (J 9)))
 
-(defun getNElementsOfList (l n) ;; Dobijamo listu elemenata koje hocemo da saljemo na osnovu 3. argumenta iz fje playMove
+(defun getNElementsOfList (l n)
     (cond
         ((null l) '())
         ((and (not (null n)) (< 0 n)) (getNElementsOfList (cdr l) (1- n)))
@@ -10,7 +10,7 @@
     )
 )
 
-(defun getRestOfList (nEl l) ;; Dobijamo listu elemenata koji nam ostaju kada posaljemo elemente u drugu listu
+(defun getRestOfList (nEl l)
     (cond
         ((null nEl) l)
         ((null l) '())
