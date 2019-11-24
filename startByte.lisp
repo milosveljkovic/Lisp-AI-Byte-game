@@ -95,7 +95,7 @@
                 (setq playerX (1+ playerX)) 
                 (setq playerO (1+ playerO))
         )
-        (format t "Player1 ~a : ~a Player2" playerX playerO)
+        (format t "PlayerX ~a : ~a PlayerO" playerX playerO)
     )          
 )
 
@@ -130,19 +130,20 @@
                     )
                     (progn 
                         (format t "Invalide move, please try again!~%") 
-                        (getMove) 
+                        ;(setq isX (not isX))
+                        (getMove)
                     )
                 )
             )
         ) ;else, bot part
         (progn
-            (format t "~%Computer move")
+            (format t "~%Computer move:~%")
             (let*
                 ((input (read)))
                 (if (validate input)
                     (progn
                         (getValuesFromMove input globalMatrix)
-                        (playMove input globalMatrix)
+                        (playMove input (addFieldInMatrix input globalMatrix))
                         (displayBoard)
                         (setq isX (not isX))
                         (setq isPerson (not isPerson))

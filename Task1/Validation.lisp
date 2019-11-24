@@ -5,9 +5,12 @@
 (defun validate (input)
     (if
         (and 
-            (checkInput input)
+            (checkInputFormat-p input)
             (blackField-p input)
+            (oneFieldMove-p input)
             (elemtnHighMatchingPlayer input)
+            (isClosestField-p input)
+            (checkStackMerge-p input)
         )
         t
         Nil
@@ -63,14 +66,14 @@
 
 (defun checkFirstFieldExistence-p (firstField)
     (let ((firstFieldTransformed (list (cadr (assoc (car firstField) letterToNumber)) (1- (car (cdr firstField))))))
-        (if (getBitsByKey firstFieldTransformed matrix) t Nil)
+        (if (getBitsByKey firstFieldTransformed globalMatrix) t Nil)
     )
 )
 
 (defun checkSecondField-p (secondField)
     (cond 
         ((= dimension 8)
-            (and 
+            (and
                 (and (assoc (car secondField) letterToNumber)  (not (equalp (car secondField) 'I)) (not (equalp (car secondField) 'J)))
                 (and (>= (cadr secondField) 1) (<= (cadr secondField) 8))
             )
@@ -84,21 +87,27 @@
     )
 )
 
-(defun checkLastField-p (lastField)
-    (if (or (null lastField) (and (>= lastField 0) (<= lastField 7))) t Nil)
+(defun checkLastField-p (input)
+
+    (let ((lastField (caddr input)) (firstFieldTransformed (list (cadr (assoc (car (car input)) letterToNumber)) (1- (car (cdr (car input)))))))
+        (if (null lastField) t 
+            (and
+                (if (and (>= lastField 0) (<= lastField 7)) t Nil)
+                (if (> (length (getBitsByKey firstFieldTransformed globalMatrix)) lastField) t Nil)
+            )
+        )
+    )
 )
 
 (defun checkInputFormat-p (input)
     (and
     (checkFirstFieldExistence-p (car input))
     (checkSecondField-p (cadr input))
-    (checkLastField-p (caddr input))
+    (checkLastField-p input)
+
     )
 )
 
-(defun distanceToField (field1 field2)
-    (max (abs (- (car field1) (car field2))) (abs (- (cadr field1) (cadr field2))) )
-)
 
 (defun checkInput (input)
     (let* (
@@ -117,5 +126,52 @@
                 ) Nil)
                 (t T)
         ) 
+    )
+)
+
+(defun closestFieldDistance (currentField fieldFrom matrix)
+    (if (null matrix) 15 
+    (progn
+        (let ((minimal (distanceToField currentField (caar matrix) fieldFrom))
+        (nextMinimal (closestFieldDistance currentField fieldFrom (cdr matrix))))
+        (if (<= minimal nextMinimal) minimal nextMinimal)
+        )
+    )
+    )
+)
+
+(defun distanceToField (field1 field2 fieldFrom)
+   (if (equalp fieldFrom field2 ) 15 (max (abs (- (car field1) (car field2))) (abs (- (cadr field1) (cadr field2)))))
+)
+
+(defun isClosestField-p (input)
+
+    (let* ((field1 (list (cadr (assoc (car (car input)) letterToNumber)) (1- (car (cdr (car input))))))
+    (field2 (list (cadr (assoc (car (cadr input)) letterToNumber)) (1- (car (cdr (cadr input)))))))
+        (if (= (let ((minimalDistance (closestFieldDistance field1 field1 globalMatrix))) minimalDistance) 1)
+            (if (= (closestFieldDistance field2 field1 globalMatrix) 0) t Nil)
+            (if (= (- (closestFieldDistance field1 field1 globalMatrix) (closestFieldDistance field2 field1 globalMatrix)) 1) t Nil)
+        )
+    )
+)
+
+(defun oneFieldMove-p (input)
+    (cond
+        ((and (or  (equalp (getFrom input) (1- (getTo input))) (equalp (getFrom input) (1+ (getTo input)))) 
+            (or (equalp (cadar input) (1- (cadadr input))) (equalp (cadar input) (1+ (cadadr input))))) t)
+        (t Nil)
+    )
+)
+
+(defun checkStackMerge-p (input)
+    (let*
+        (
+        (field1 (list (cadr (assoc (car (car input)) letterToNumber)) (1- (car (cdr (car input))))))
+        (field2 (list (cadr (assoc (car (cadr input)) letterToNumber)) (1- (car (cdr (cadr input))))))
+        (lastField (if (null (caddr input)) 0 (caddr input)))
+        )
+        (if (and (= (length (getBitsByKey field2 globalMatrix)) 0) (or (null lastField) (= lastField 0))) t
+            (if (> (+ (- (length (getBitsByKey field1 globalMatrix)) lastField) (length (getBitsByKey field2 globalMatrix))) (length (getBitsByKey field1 globalMatrix))) t Nil)
+        )
     )
 )
