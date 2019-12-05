@@ -1,7 +1,8 @@
-(defun displayBoard ()
+(defun displayBoard (globalMatrix)
     (format t "~%")
     (createTopRow)
-    (createFields)
+    (createFields globalMatrix)
+    (print globalMatrix)
     (format t "~%")
 )
 
@@ -13,7 +14,7 @@
     (format t "~%")
 )
 
-(defun createFields ()
+(defun createFields (globalMatrix)
     (dotimes (i dimension)
         (dotimes (j 3)
             (if (= j 1)

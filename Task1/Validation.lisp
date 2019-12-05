@@ -1,13 +1,12 @@
-
-(defun validate (input)
+(defun validate (input globalMatrix)
     (if
         (and 
-            (checkInputFormat-p input)
+            (checkInputFormat-p input globalMatrix)
             (blackField-p input)
             (oneFieldMove-p input)
-            (elemtnHighMatchingPlayer input)
-            (isClosestField-p input)
-            (checkStackMerge-p input)
+            (elemtnHighMatchingPlayer input globalMatrix)
+            (isClosestField-p input globalMatrix)
+            (checkStackMerge-p input globalMatrix)
         )
         t
         Nil
@@ -46,7 +45,7 @@
     )
 )
 
-(defun elemtnHighMatchingPlayer (input) 
+(defun elemtnHighMatchingPlayer (input globalMatrix) 
     (if isX
         (if
             (equalp 'O (car (getNElementsOfList (reverse (getBitsByKey (list (getFrom input) (1- (cadar input)))  globalMatrix)) (caddr input))))
@@ -61,7 +60,7 @@
     )
 )
 
-(defun checkFirstFieldExistence-p (firstField)
+(defun checkFirstFieldExistence-p (firstField globalMatrix)
     (let ((firstFieldTransformed (list (cadr (assoc (car firstField) letterToNumber)) (1- (car (cdr firstField))))))
         (if (getBitsByKey firstFieldTransformed globalMatrix) t Nil)
     )
@@ -84,7 +83,7 @@
     )
 )
 
-(defun checkLastField-p (input)
+(defun checkLastField-p (input globalMatrix)
 
     (let ((lastField (caddr input)) (firstFieldTransformed (list (cadr (assoc (car (car input)) letterToNumber)) (1- (car (cdr (car input)))))))
         (if (null lastField) t 
@@ -96,15 +95,15 @@
     )
 )
 
-(defun checkInputFormat-p (input)
+(defun checkInputFormat-p (input globalMatrix)
     (and
     (if (list input) t Nil)
     (if (list (car input)) t Nil)
     (if (list (cadr input)) t Nil)
     (if (or (numberp (caddr input)) (null (caddr input))) t Nil)
-    (checkFirstFieldExistence-p (car input))
+    (checkFirstFieldExistence-p (car input) globalMatrix)
     (checkSecondField-p (cadr input))
-    (checkLastField-p input)
+    (checkLastField-p input globalMatrix)
 
     )
 )
@@ -145,7 +144,7 @@
    (if (equalp fieldFrom field2 ) 15 (max (abs (- (car field1) (car field2))) (abs (- (cadr field1) (cadr field2)))))
 )
 
-(defun isClosestField-p (input)
+(defun isClosestField-p (input globalMatrix)
 
     (let* ((field1 (list (cadr (assoc (car (car input)) letterToNumber)) (1- (car (cdr (car input))))))
     (field2 (list (cadr (assoc (car (cadr input)) letterToNumber)) (1- (car (cdr (cadr input)))))))
@@ -164,7 +163,7 @@
     )
 )
 
-(defun checkStackMerge-p (input)
+(defun checkStackMerge-p (input globalMatrix)
     (let*
         (
         (field1 (list (cadr (assoc (car (car input)) letterToNumber)) (1- (car (cdr (car input))))))

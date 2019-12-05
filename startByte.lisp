@@ -1,24 +1,20 @@
 (load "./Task1/Helper.lisp")
 (load "./Task1/Display.lisp")
 (load "./Task1/Validation.lisp")
-
+(load "./Task2/StateGenerator.lisp")
 
 (defun startGame ()
     (welcome)
     (readBoardDimension)
-    (setq globalMatrix (matrixFactoryByte 1 1))
     (setq playerX 0)
     (setq playerO 0)
     (setq isX t) 
     (setq isPerson (choseFirstPlayer))
-    (displayBoard)
-    (play)
+    (displayBoard (matrixFactoryByte 1 1))
+    (play (matrixFactoryByte 1 1))
 )
-
-(defun play()
-    (loop while (not (endOfGame)) 
-    do (getMove))
-    (gameOverMessage)
+(defun play (globalMatrix)
+    (getMove globalMatrix)
 )
 
 (defun welcome ()
@@ -53,44 +49,40 @@
 )
 
 (defun playMove (move matrix)
-    (setq globalMatrix
-        (progn   
-            (cond
-                ((null matrix) '())
-                ((and 
-                    (not (equalp (caar matrix) (list from (1- (cadar move))) ))
-                    (not (equalp (caar matrix) (list to (1- (cadadr move))) ))
-                )
-                (cons (car matrix) (playMove move (cdr matrix)))
-                )
-                (t 
-                    (if (equalp (caar matrix) (list to (1- (cadadr move))))
-                        (if (equalp 8 (length (append elTo (cadar matrix))))
-                                (progn
-                                    (addPointToPlayer matrix)
-                                    (playMove move (cdr matrix))
-                                )
-                                (cons
-                                    (list
-                                        (caar matrix)
-                                        (append 
-                                            elTo 
-                                            (cadar matrix)
-                                        )
-                                    )
-                                    (playMove move (cdr matrix))
-                                )
-                        )
-                        (if (null (getRestOfList elTo (cadar matrix)))
+    (cond
+        ((null matrix) '())
+        ((and 
+            (not (equalp (caar matrix) (list from (1- (cadar move))) ))
+            (not (equalp (caar matrix) (list to (1- (cadadr move))) ))
+        )
+        (cons (car matrix) (playMove move (cdr matrix)))
+        )
+        (t 
+            (if (equalp (caar matrix) (list to (1- (cadadr move))))
+                (if (equalp 8 (length (append elTo (cadar matrix))))
+                        (progn
+                            (addPointToPlayer matrix)
                             (playMove move (cdr matrix))
-                            (cons
+                        )
+                        (cons
                             (list
                                 (caar matrix)
-                                (getRestOfList elTo (cadar matrix))
+                                (append 
+                                    elTo 
+                                    (cadar matrix)
+                                )
                             )
-                            (playMove move (cdr matrix)))
+                            (playMove move (cdr matrix))
                         )
+                )
+                (if (null (getRestOfList elTo (cadar matrix)))
+                    (playMove move (cdr matrix))
+                    (cons
+                    (list
+                        (caar matrix)
+                        (getRestOfList elTo (cadar matrix))
                     )
+                    (playMove move (cdr matrix)))
                 )
             )
         )
@@ -111,7 +103,7 @@
 (defun addFieldInMatrix (move matrix)
     (if (null (getBitsByKey (list (cadr (assoc (caadr move) letterToNumber)) (1- (cadadr move))) matrix)) 
             (cons (list (list (cadr (assoc (caadr move) letterToNumber)) (1- (cadadr move))) '())  matrix)
-            globalMatrix
+            matrix
     )
 )
 
@@ -121,46 +113,72 @@
         (setq elTo (reverse (getNElementsOfList (reverse (getBitsByKey (list from (1- (cadar move))) matrix)) (caddr move))))
 )
 
-(defun getMove ()
-    (enterMovePrint)
-    (if isPerson
-        (progn
-            (let*
-                ((input (read)))
-                (if (validate input)
+(defun getMove (matrix)
+    (progn
+        (if (null (generateAllStates matrix)) (progn (noAvailableMoves) (getMove matrix)) 
+            (progn
+                (enterMovePrint)
+                (if isPerson
                     (progn
-                        (getValuesFromMove input globalMatrix)
-                        (playMove input (addFieldInMatrix input globalMatrix))
-                        (displayBoard)
-                        (setq isX (not isX))
-                        (setq isPerson (not isPerson))
+                        (let*
+                            ((input (read)))
+                            (if (validate input matrix)
+                                (progn
+                                    (getValuesFromMove input matrix)
+                                    (let ((nextMatrix (playMove input (addFieldInMatrix input matrix))))
+                                    
+                                        (displayBoard nextMatrix)
+                                        (setq isX (not isX))
+                                        (setq isPerson (not isPerson))
+                                        (if  (not (endOfGame))
+                                            (getMove nextMatrix)
+                                            (gameOverMessage)
+                                        )
+                                    )
+                                )
+                                (progn 
+                                    (format t "Invalid move, please try again!~%") 
+                                    (getMove matrix)
+                                )
+                            )
+                        )
                     )
-                    (progn 
-                        (format t "Invalid move, please try again!~%") 
-                        (getMove)
+                    (progn
+                        (format t "~%Computer move:")
+                        (let*
+                            ((input (read)))
+                            (if (validate input matrix)
+                                (progn
+                                    (getValuesFromMove input matrix)
+                                    (let ((nextMatrix (playMove input (addFieldInMatrix input matrix))))
+                                        ;;(generateStates matrix matrix)
+                                        (displayBoard nextMatrix)
+                                        (setq isX (not isX))
+                                        (setq isPerson (not isPerson))
+                                        (if  (not (endOfGame))
+                                            (getMove nextMatrix)
+                                            (gameOverMessage)
+                                        )
+                                    )
+                                )
+                                (progn 
+                                    (format t "Invalid move, please try again!~%")
+                                    (getMove matrix)
+                                )
+                            )
+                        )
                     )
                 )
             )
         )
-        (progn
-            (format t "~%Computer move:")
-            (let*
-                ((input (read)))
-                (if (validate input)
-                    (progn
-                        (getValuesFromMove input globalMatrix)
-                        (playMove input (addFieldInMatrix input globalMatrix))
-                        (displayBoard)
-                        (setq isX (not isX))
-                        (setq isPerson (not isPerson))
-                    )
-                    (progn 
-                        (format t "Invalid move, please try again!~%")
-                        (getMove)
-                    )
-                )
-            )
-        )
+    )
+)
+
+(defun noAvailableMoves ()
+    (progn
+        (format t "~%There is no available moves for you!")
+        (setq isX (not isX))
+        (setq isPerson (not isPerson))
     )
 )
 
