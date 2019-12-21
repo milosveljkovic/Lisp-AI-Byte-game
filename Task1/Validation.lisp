@@ -1,10 +1,10 @@
-(defun validate (input globalMatrix)
+(defun validate (input globalMatrix xMove)
     (if
         (and 
             (checkInputFormat-p input globalMatrix)
             (blackField-p input)
             (oneFieldMove-p input)
-            (elemtnHighMatchingPlayer input globalMatrix)
+            (elemtnHighMatchingPlayer input globalMatrix xMove)
             (isClosestField-p input globalMatrix)
             (checkStackMerge-p input globalMatrix)
         )
@@ -45,8 +45,8 @@
     )
 )
 
-(defun elemtnHighMatchingPlayer (input globalMatrix) 
-    (if isX
+(defun elemtnHighMatchingPlayer (input globalMatrix xMove) 
+    (if xMove
         (if
             (equalp 'O (car (getNElementsOfList (reverse (getBitsByKey (list (getFrom input) (1- (cadar input)))  globalMatrix)) (caddr input))))
             Nil

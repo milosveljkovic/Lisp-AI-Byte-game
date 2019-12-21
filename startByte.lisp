@@ -2,6 +2,7 @@
 (load "./Task1/Display.lisp")
 (load "./Task1/Validation.lisp")
 (load "./Task2/StateGenerator.lisp")
+(load "./Task3/MinMax.lisp")
 
 (defun startGame ()
     (welcome)
@@ -10,6 +11,7 @@
     (setq playerO 0)
     (setq isX t) 
     (setq isPerson (choseFirstPlayer))
+    (setq depth 3)
     (displayBoard (matrixFactoryByte 1 1))
     (play (matrixFactoryByte 1 1))
 )
@@ -115,14 +117,14 @@
 
 (defun getMove (matrix)
     (progn
-        (if (null (generateAllStates matrix)) (progn (noAvailableMoves) (getMove matrix)) 
+        (if (null (generateAllStates matrix isX)) (progn (noAvailableMoves) (getMove matrix)) 
             (progn
                 (enterMovePrint)
                 (if isPerson
                     (progn
                         (let*
                             ((input (read)))
-                            (if (validate input matrix)
+                            (if (validate input matrix isX)
                                 (progn
                                     (getValuesFromMove input matrix)
                                     (let ((nextMatrix (playMove input (addFieldInMatrix input matrix))))
@@ -146,8 +148,7 @@
                     (progn
                         (format t "~%Computer move:")
                         (let*
-                            ((input (read)))
-                            (if (validate input matrix)
+                            ((input (minimax matrix '() '0 '1000 depth isX)))
                                 (progn
                                     (getValuesFromMove input matrix)
                                     (let ((nextMatrix (playMove input (addFieldInMatrix input matrix))))
@@ -161,11 +162,6 @@
                                         )
                                     )
                                 )
-                                (progn 
-                                    (format t "Invalid move, please try again!~%")
-                                    (getMove matrix)
-                                )
-                            )
                         )
                     )
                 )
