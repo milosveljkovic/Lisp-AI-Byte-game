@@ -1,67 +1,61 @@
 
 
-(defun minimax (state move alpha beta currentDepth isMyMove)
+(defun min-max (matrix move alpha beta currentDepth isMyMove)
     (cond
-        ;; ((and (not (equalp depth currentDepth)) ) ;;checkIfEnd
-        ;;     (if (not (equalp isMyMove isX)) 
-        ;;         (list move '1000)
-        ;;         (list move '-1000)
-        ;;     )
-        ;; )
-        ((zerop currentDepth) (list move (estimateState state)))
+        ((zerop currentDepth) (list move (estimateState matrix)))
         (t
             (let*
                 (
-                    (generatedMoves (getValidateGeneratedMoves state isMyMove))
-                    (result
+                    (generatedMoves (getValidateGeneratedMoves matrix isMyMove))
+                    (move-value
                         (if (equalp isMyMove isX)
-                            (maxPlay generatedMoves '() currentDepth alpha beta isMyMove state)
-                            (minPlay generatedMoves '() currentDepth alpha beta isMyMove state)
+                            (findMaxMove generatedMoves '() currentDepth alpha beta isMyMove matrix)
+                            (findMinMove generatedMoves '() currentDepth alpha beta isMyMove matrix)
                         ) 
                     )
                 )
                 (cond
-                    ((null generatedMoves) (list move (estimateState state)))
-                    ((equalp currentDepth depth) (car result))
-                    (t (list move (cadr result)))
+                    ((null generatedMoves) (list move (estimateState matrix)))
+                    ((equalp currentDepth depth) (car move-value))
+                    (t (list move (cadr move-value)))
                 )
             )
         )       
     )
 )
 
-(defun maxPlay (movesList bestMove depth alpha beta isMyMove previousState)
+(defun findMaxMove (movesList bestMove depth alpha beta isMyMove previousState)
     (cond 
         ((null movesList) (list bestMove alpha))
         (t 
             (let*
                 (                
-                    (previousMoveState (getGeneratedMatrix (car movesList) previousState))
-                    (minMove (minimax previousMoveState (car movesList)  alpha beta (1- depth) (not isMyMove)))
+                    (nextState (getGeneratedMatrix (car movesList) previousState))
+                    (minMove (min-max nextState (car movesList)  alpha beta (1- depth) (not isMyMove)))
                     (newMove (if (>= alpha (cadr minMove)) (list bestMove alpha) minMove))
                 )
                 (if (or (> (cadr newMove) beta) (null movesList))
                         (list bestMove (cadr newMove))
-                        (maxPlay (cdr movesList) (car newMove) depth (cadr newMove) beta isMyMove previousState)
+                        (findMaxMove (cdr movesList) (car newMove) depth (cadr newMove) beta isMyMove previousState)
                 )
             )
         )
     )
 )
 
-(defun minPlay (movesList bestMove depth alpha beta isMyMove previousState)
+(defun findMinMove (movesList bestMove depth alpha beta isMyMove previousState)
     (cond 
         ((null movesList) (list bestMove beta))
         (t 
             (let*
                 (    
-                    (previousMoveState (getGeneratedMatrix (car movesList) previousState))            
-                    (maxMove (minimax previousMoveState (car movesList) alpha beta (1- depth) (not isMyMove)))
+                    (nextState (getGeneratedMatrix (car movesList) previousState))            
+                    (maxMove (min-max nextState (car movesList) alpha beta (1- depth) (not isMyMove)))
                     (newMove (if (<= beta (cadr maxMove)) (list bestMove beta) maxMove))
                 )
                 (if (or (< (cadr newMove) alpha)(null (cdr movesList)))
                         (list bestMove (cadr newMove))
-                        (minPlay (cdr movesList) (car newMove) depth alpha (cadr newMove) isMyMove previousState)
+                        (findMinMove (cdr movesList) (car newMove) depth alpha (cadr newMove) isMyMove previousState)
                 )
             )
         )
@@ -74,5 +68,3 @@
 )
 
 (setf *random-state* (make-random-state t)) ;;za generisanje pravog random-a (SEED)
-
-;;(trace estimateState)

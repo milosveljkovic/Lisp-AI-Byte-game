@@ -98,7 +98,6 @@
                 (setq playerX (1+ playerX)) 
                 (setq playerO (1+ playerO))
         )
-        (format t "PlayerX ~a : ~a PlayerO" playerX playerO)
     )          
 )
 
@@ -147,8 +146,9 @@
                     )
                     (progn
                         (format t "~%Computer move:")
+                        (format t "~%Wait for computer's move..")
                         (let*
-                            ((input (minimax matrix '() '0 '1000 depth isX)))
+                            ((input (min-max matrix '() '0 '1000 depth isX)))
                                 (progn
                                     (getValuesFromMove input matrix)
                                     (let ((nextMatrix (playMove input (addFieldInMatrix input matrix))))

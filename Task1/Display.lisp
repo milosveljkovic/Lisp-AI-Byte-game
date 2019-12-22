@@ -1,5 +1,7 @@
 (defun displayBoard (globalMatrix)
     (format t "~%")
+    (format t "                  PlayerX ~a : ~a PlayerO" playerX playerO)
+    (format t "~%")
     (createTopRow)
     (createFields globalMatrix)
     (print globalMatrix)
