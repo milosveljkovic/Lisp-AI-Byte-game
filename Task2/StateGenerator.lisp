@@ -98,7 +98,10 @@
         (t 
             (if (equalp (caar matrix) (list to (1- (cadadr move))))
                 (if (equalp 8 (length (append elTo (cadar matrix))))
-                        (getGeneratedMatrix move (cdr matrix))
+                        (progn
+                            (if (not isPerson) (addPointToPlayerHelper matrix))
+                            (getGeneratedMatrix move (cdr matrix))
+                        )
                         (cons
                             (list
                                 (caar matrix)
@@ -122,6 +125,18 @@
             )
         )
     )
+)
+
+(defun addPointToPlayerHelper (matrix)
+    (progn
+        (print "uso u helper")
+        (if 
+            (equalp (car (append elTo (cadar matrix))) 'X)
+                (setq scoreX (1+ scoreX)) 
+                (setq scoreO (1+ scoreO))
+        )
+        (format t "~a -x ~a -o" scoreX scoreO)
+    )          
 )
 
 (defun generateAllStates (matrix xMove)

@@ -2,7 +2,19 @@
 
 (defun min-max (matrix move alpha beta currentDepth isMyMove)
     (cond
-        ((zerop currentDepth) (list move (estimateState matrix)))
+        ;; ((and (equal (- depth currentDepth ) 1) (!checkIfXGetPoint) )
+        ;;     (if isX
+        ;;         (list move '800)
+        ;;         (list move '-800)
+        ;;     )
+        ;; )
+        ;; ((and (equal (- depth currentDepth) 1) (!checkIfOGetPoint) )
+        ;;     (if (not isX)
+        ;;         (list move '800)
+        ;;         (list move '-800)
+        ;;     )
+        ;; )
+        ((zerop currentDepth) (list move (estimateState matrix isMyMove)))
         (t
             (let*
                 (
@@ -15,7 +27,7 @@
                     )
                 )
                 (cond
-                    ((null generatedMoves) (list move (estimateState matrix)))
+                    ((null generatedMoves) (list move (estimateState matrix isMyMove)))
                     ((equalp currentDepth depth) (car move-value))
                     (t (list move (cadr move-value)))
                 )
@@ -61,10 +73,3 @@
         )
     )
 )
-
-
-(defun estimateState (currentMove)
-     (random 1000)
-)
-
-(setf *random-state* (make-random-state t)) ;;za generisanje pravog random-a (SEED)

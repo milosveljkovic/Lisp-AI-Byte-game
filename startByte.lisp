@@ -3,12 +3,16 @@
 (load "./Task1/Validation.lisp")
 (load "./Task2/StateGenerator.lisp")
 (load "./Task3/MinMax.lisp")
+(load "./Task4/Heuristics.lisp")
+(load "./Task4/Inference_engine.cl")
 
 (defun startGame ()
     (welcome)
     (readBoardDimension)
     (setq playerX 0)
     (setq playerO 0)
+    (setq scoreX 0)
+    (setq scoreO 0)
     (setq isX t) 
     (setq isPerson (choseFirstPlayer))
     (setq depth 3)
@@ -147,8 +151,10 @@
                     (progn
                         (format t "~%Computer move:")
                         (format t "~%Wait for computer's move..")
+                        (setq scoreX playerX)
+                        (setq scoreO playerO)
                         (let*
-                            ((input (min-max matrix '() '0 '1000 depth isX)))
+                            ((input (min-max matrix '() '-1000 '1000 depth isX)))
                                 (progn
                                     (getValuesFromMove input matrix)
                                     (let ((nextMatrix (playMove input (addFieldInMatrix input matrix))))
@@ -172,7 +178,7 @@
 
 (defun noAvailableMoves ()
     (progn
-        (format t "~%There is no available moves for you!")
+        (format t "~%There is no available moves for you!~%")
         (setq isX (not isX))
         (setq isPerson (not isPerson))
     )
