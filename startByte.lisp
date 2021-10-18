@@ -2,14 +2,20 @@
 (load "./Task1/Display.lisp")
 (load "./Task1/Validation.lisp")
 (load "./Task2/StateGenerator.lisp")
+(load "./Task3/MinMax.lisp")
+(load "./Task4/Heuristics.lisp")
+(load "./Task4/Inference_engine.cl")
 
 (defun startGame ()
     (welcome)
     (readBoardDimension)
     (setq playerX 0)
     (setq playerO 0)
+    (setq scoreX 0)
+    (setq scoreO 0)
     (setq isX t) 
     (setq isPerson (choseFirstPlayer))
+    (setq depth 3)
     (displayBoard (matrixFactoryByte 1 1))
     (play (matrixFactoryByte 1 1))
 )
@@ -96,7 +102,6 @@
                 (setq playerX (1+ playerX)) 
                 (setq playerO (1+ playerO))
         )
-        (format t "PlayerX ~a : ~a PlayerO" playerX playerO)
     )          
 )
 
@@ -115,14 +120,14 @@
 
 (defun getMove (matrix)
     (progn
-        (if (null (generateAllStates matrix)) (progn (noAvailableMoves) (getMove matrix)) 
+        (if (null (generateAllStates matrix isX)) (progn (noAvailableMoves) (getMove matrix)) 
             (progn
                 (enterMovePrint)
                 (if isPerson
                     (progn
                         (let*
                             ((input (read)))
-                            (if (validate input matrix)
+                            (if (validate input matrix isX)
                                 (progn
                                     (getValuesFromMove input matrix)
                                     (let ((nextMatrix (playMove input (addFieldInMatrix input matrix))))
@@ -145,9 +150,11 @@
                     )
                     (progn
                         (format t "~%Computer move:")
+                        (format t "~%Wait for computer's move..")
+                        (setq scoreX playerX)
+                        (setq scoreO playerO)
                         (let*
-                            ((input (read)))
-                            (if (validate input matrix)
+                            ((input (min-max matrix '() '-1000 '1000 depth isX)))
                                 (progn
                                     (getValuesFromMove input matrix)
                                     (let ((nextMatrix (playMove input (addFieldInMatrix input matrix))))
@@ -161,11 +168,6 @@
                                         )
                                     )
                                 )
-                                (progn 
-                                    (format t "Invalid move, please try again!~%")
-                                    (getMove matrix)
-                                )
-                            )
                         )
                     )
                 )
@@ -176,7 +178,7 @@
 
 (defun noAvailableMoves ()
     (progn
-        (format t "~%There is no available moves for you!")
+        (format t "~%There is no available moves for you!~%")
         (setq isX (not isX))
         (setq isPerson (not isPerson))
     )

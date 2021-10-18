@@ -11,17 +11,17 @@
     )
 )
 
-(defun getValidateGeneratedMoves (matrix)
-    (validateGeneratedMovesHelper (generateStates matrix matrix) matrix)
+(defun getValidateGeneratedMoves (matrix xMove)
+    (validateGeneratedMovesHelper (generateStates matrix matrix) matrix xMove)
 )
 
-(defun validateGeneratedMovesHelper (allMoves matrix)
+(defun validateGeneratedMovesHelper (allMoves matrix xMove)
     (cond
         ((null allMoves) '())
         (t 
-            (if (validate (car allMoves) matrix)
-                (cons (car allMoves) (validateGeneratedMovesHelper (cdr allMoves) matrix)) 
-                (validateGeneratedMovesHelper (cdr allMoves) matrix)
+            (if (validate (car allMoves) matrix xMove)
+                (cons (car allMoves) (validateGeneratedMovesHelper (cdr allMoves) matrix xMove)) 
+                (validateGeneratedMovesHelper (cdr allMoves) matrix xMove)
             )
         )
     )
@@ -98,7 +98,10 @@
         (t 
             (if (equalp (caar matrix) (list to (1- (cadadr move))))
                 (if (equalp 8 (length (append elTo (cadar matrix))))
-                        (getGeneratedMatrix move (cdr matrix))
+                        (progn
+                            (if (not isPerson) (addPointToPlayerHelper matrix))
+                            (getGeneratedMatrix move (cdr matrix))
+                        )
                         (cons
                             (list
                                 (caar matrix)
@@ -124,8 +127,20 @@
     )
 )
 
-(defun generateAllStates (matrix)
-    (getAllStates (getValidateGeneratedMoves matrix) matrix)
+(defun addPointToPlayerHelper (matrix)
+    (progn
+        (print "uso u helper")
+        (if 
+            (equalp (car (append elTo (cadar matrix))) 'X)
+                (setq scoreX (1+ scoreX)) 
+                (setq scoreO (1+ scoreO))
+        )
+        (format t "~a -x ~a -o" scoreX scoreO)
+    )          
+)
+
+(defun generateAllStates (matrix xMove)
+    (getAllStates (getValidateGeneratedMoves matrix xMove) matrix)
 )
 
 (defun getAllStates (moves matrix)
@@ -139,6 +154,7 @@
         )
     )
 )
+
 
 ;; (displayBoard '(((1 3) (X)) ((1 5) (X)) ((1 7) (X)) ((2 0) (X O)) ((2 2) (X O)) ((2 4) (O)) ((2 6) (O X O)) ((3 3) (X)) ((3 5) (X)) ((4 0) (O)) ((4 2) (O X O)) ((4 4) (O)) ((5 3) (O X))
 ;;  ((5 5) (X)) ((5 7) (X)) ((6 0) (O)) ((6 6) (O))))
